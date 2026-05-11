@@ -207,7 +207,7 @@ function SawJobDialog({
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <Field label="Log lot">
-              <Select value={form.logId} onValueChange={(v) => setForm({ ...form, logId: v })}>
+              <Select value={form.logId} onValueChange={(v) => v && setForm({ ...form, logId: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {db.logs.map((l) => (
@@ -217,7 +217,7 @@ function SawJobDialog({
               </Select>
             </Field>
             <Field label="Mistri">
-              <Select value={form.mistriId} onValueChange={(v) => setForm({ ...form, mistriId: v })}>
+              <Select value={form.mistriId} onValueChange={(v) => v && setForm({ ...form, mistriId: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {db.labour.filter((l) => l.role === "Mistri").map((l) => (
@@ -230,7 +230,7 @@ function SawJobDialog({
             <Field label="Output CFT"><Input type="number" step={0.1} value={form.outputCft} onChange={(e) => setForm({ ...form, outputCft: +e.target.value || 0 })} /></Field>
             <Field label="Wastage CFT"><Input type="number" step={0.1} value={form.wastageCft} onChange={(e) => setForm({ ...form, wastageCft: +e.target.value || 0 })} /></Field>
             <Field label="Status">
-              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as SawJob["status"], endedAt: v === "completed" ? (form.endedAt ?? new Date().toISOString()) : null })}>
+              <Select value={form.status} onValueChange={(v) => v && setForm({ ...form, status: v as SawJob["status"], endedAt: v === "completed" ? (form.endedAt ?? new Date().toISOString()) : null })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="in_progress">in_progress</SelectItem>

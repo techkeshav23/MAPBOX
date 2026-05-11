@@ -57,7 +57,7 @@ export default function TenantsPage() {
           placeholder="Search by name or city…"
           className="max-w-xs"
         />
-        <Select value={planF} onValueChange={setPlanF}>
+        <Select value={planF} onValueChange={(v) => setPlanF(v ?? "all")}>
           <SelectTrigger className="max-w-[10rem]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All plans</SelectItem>
@@ -66,7 +66,7 @@ export default function TenantsPage() {
             <SelectItem value="Enterprise">Enterprise</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={statusF} onValueChange={setStatusF}>
+        <Select value={statusF} onValueChange={(v) => setStatusF(v ?? "all")}>
           <SelectTrigger className="max-w-[10rem]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All status</SelectItem>
@@ -261,7 +261,7 @@ function ProvisionForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label>Plan</Label>
-          <Select value={plan} onValueChange={(v) => setPlan(v as typeof plan)}>
+          <Select value={plan} onValueChange={(v) => v && setPlan(v as typeof plan)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Starter">Starter</SelectItem>

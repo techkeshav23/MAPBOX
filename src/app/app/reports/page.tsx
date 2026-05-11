@@ -191,10 +191,10 @@ function MonthlyReport() {
         <StatCard label="Spend" value={fmtMoney(expense, ccy)} />
       </div>
 
-      <Card className="p-5 gap-3">
-        <div className="text-sm font-semibold">Revenue vs Spend (this month)</div>
+      <section className="rule-thin pt-3">
+        <div className="text-[13px] font-semibold uppercase tracking-wide mb-3">Revenue vs spend · this month</div>
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <BarChart
               data={[
                 { wk: "Wk 1", Revenue: 85000, Spend: 62000 },
@@ -202,18 +202,19 @@ function MonthlyReport() {
                 { wk: "Wk 3", Revenue: 96000, Spend: 71000 },
                 { wk: "Wk 4", Revenue: 142000, Spend: 110000 },
               ]}
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
             >
-              <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="wk" stroke="var(--color-muted-foreground)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis stroke="var(--color-muted-foreground)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => fmtMoney(v)} contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="Revenue" fill="var(--color-wood-700)" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="Spend" fill="var(--color-wood-300)" radius={[6, 6, 0, 0]} />
+              <CartesianGrid stroke="#E5E0D6" strokeDasharray="2 4" vertical={false} />
+              <XAxis dataKey="wk" stroke="#6B5E51" tick={{ fontSize: 11, fontFamily: "var(--font-plex-mono)" }} axisLine={{ stroke: "#1B1410" }} tickLine={false} />
+              <YAxis stroke="#6B5E51" tick={{ fontSize: 11, fontFamily: "var(--font-plex-mono)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} width={36} />
+              <Tooltip formatter={(v) => fmtMoney(Number(v))} contentStyle={{ borderRadius: 2, border: "1px solid #1B1410", fontSize: 11, fontFamily: "var(--font-plex-mono)" }} />
+              <Legend wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-plex-mono)" }} />
+              <Bar dataKey="Revenue" fill="#1B1410" />
+              <Bar dataKey="Spend" fill="#C8945A" />
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </Card>
+      </section>
 
       <div className="grid lg:grid-cols-2 gap-4">
         <SimpleTable

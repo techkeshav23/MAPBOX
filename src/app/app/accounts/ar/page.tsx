@@ -170,7 +170,7 @@ function NewInvoiceDialog({ onClose, onSave }: { onClose: () => void; onSave: (i
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Customer</Label>
-              <Select value={customerId} onValueChange={setCustomerId}>
+              <Select value={customerId} onValueChange={(v) => v && setCustomerId(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{db.customers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>

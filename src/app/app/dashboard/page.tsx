@@ -2,22 +2,24 @@
 
 import Link from "next/link";
 import { useStore } from "@/lib/store";
-import { fmtMoney, fmtCompact, timeAgo } from "@/lib/format";
-import { StatCard } from "@/components/shared/stat-card";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Card } from "@/components/ui/card";
+import { fmtMoney, fmtCompact, fmtDate, timeAgo } from "@/lib/format";
+import { PageHeader } from "@/components/shared/page-header";
+import { DataStrip } from "@/components/shared/data-strip";
+import { Section } from "@/components/shared/section";
+import { StatusDot } from "@/components/shared/status-dot";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, PieChart, Pie, Cell, Legend,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  PieChart, Pie, Cell, Legend,
 } from "recharts";
 
-const dailyOutput = [
-  120, 140, 95, 165, 180, 0, 220, 198, 175, 210, 188, 230, 245, 184,
-].map((v, i) => ({ d: `${14 - i}`, v }));
+const dailyOutput = [120, 140, 95, 165, 180, 0, 220, 198, 175, 210, 188, 230, 245, 184].map((v, i) => ({
+  d: `${14 - i}`,
+  v,
+}));
 
-const speciesPalette = ["#79482C", "#C8945A", "#965E36", "#D9B57F", "#5A3621"];
+const speciesPalette = ["#1B1410", "#79482C", "#C8945A", "#D9B57F", "#E8D2AE"];
 
 export default function OwnerDashboard() {
   const db = useStore((s) => s.db);
@@ -39,149 +41,156 @@ export default function OwnerDashboard() {
 
   const recv = db.invoices.reduce((s, i) => s + i.total - i.paid, 0);
   const owed = db.bills.reduce((s, b) => s + b.amount - b.paid, 0);
-
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const today = new Date().toLocaleDateString("en-IN", {
+    weekday: "long", day: "2-digit", month: "long", year: "numeric",
+  });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-wood-700">
-            {db.settings.organisation}
-          </div>
-          <h2 className="text-2xl font-bold mt-1">{greet}, Mahesh ji 👋</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {labourCount} workers on roll · {openOrders} open orders ·{" "}
-            {overdueAR ? `${fmtMoney(overdueAR, ccy)} overdue` : "all invoices on track"}.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/app/reports" className={buttonVariants({ variant: "outline" })}>Monthly report</Link>
-          <Link href="/app/sheets" className={buttonVariants({ variant: "default" })}>Open Sheets</Link>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        meta={`${db.settings.organisation} · ${today}`}
+        title="Day at a glance"
+        sub={`${labourCount} workers on roll · ${openOrders} open orders · ${
+          overdueAR ? `${fmtMoney(overdueAR, ccy)} overdue` : "no overdue receivables"
+        }.`}
+        actions={
+          <>
+            <Link href="/app/reports" className={cn(buttonVariants({ variant: "outline" }), "rounded-sm")}>
+              Reports
+            </Link>
+            <Link href="/app/sheets" className={cn(buttonVariants(), "rounded-sm")}>
+              Sheets
+            </Link>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Inventory (CFT)" value={fmtCompact(totalCftIn)} delta="+12% vs last week" trend="up" />
-        <StatCard label="Revenue collected" value={fmtMoney(monthlyRev, ccy)} delta="this month" trend="flat" />
-        <StatCard label="Procurement spend" value={fmtMoney(monthlyCost, ccy)} delta="this month" trend="flat" />
-        <StatCard label="Open orders" value={openOrders} delta={`${db.orders.length} total`} trend="flat" />
-      </div>
+      <DataStrip
+        facts={[
+          { label: "Inventory", value: `${fmtCompact(totalCftIn)} CFT`, sub: "+12% w/w", trend: "up" },
+          { label: "Collected", value: fmtMoney(monthlyRev, ccy), sub: "this month" },
+          { label: "Spent", value: fmtMoney(monthlyCost, ccy), sub: "this month" },
+          { label: "Open orders", value: openOrders, sub: `of ${db.orders.length}` },
+          { label: "Overdue AR", value: fmtMoney(overdueAR, ccy), sub: overdueAR ? "follow up" : "—", trend: overdueAR ? "down" : undefined },
+        ]}
+      />
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="p-5 lg:col-span-2 gap-3">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="text-sm font-semibold">Daily output (CFT)</div>
-              <div className="text-xs text-muted-foreground">Last 14 days · all species</div>
-            </div>
-            <StatusBadge value="+8.2%" tone="emerald" />
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dailyOutput}>
-                <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="d" stroke="var(--color-muted-foreground)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis stroke="var(--color-muted-foreground)" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-border)" }} />
-                <Bar dataKey="v" fill="var(--color-wood-400)" radius={[6, 6, 0, 0]} />
+      {/* Output + species mix */}
+      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-8 mt-8">
+        <Section
+          title="Daily output · last 14 days"
+          sub="CFT processed across all species"
+          right={<span className="mono text-xs text-muted-foreground">avg 168.6 / day</span>}
+        >
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+              <BarChart data={dailyOutput} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid stroke="#E5E0D6" strokeDasharray="2 4" vertical={false} />
+                <XAxis dataKey="d" stroke="#6B5E51" tick={{ fontSize: 10, fontFamily: "var(--font-plex-mono)" }} axisLine={{ stroke: "#1B1410" }} tickLine={false} />
+                <YAxis stroke="#6B5E51" tick={{ fontSize: 10, fontFamily: "var(--font-plex-mono)" }} axisLine={false} tickLine={false} width={32} />
+                <Tooltip contentStyle={{ borderRadius: 2, border: "1px solid #1B1410", fontSize: 11, fontFamily: "var(--font-plex-mono)" }} />
+                <Bar dataKey="v" fill="#79482C" />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </Section>
 
-        <Card className="p-5 gap-2">
-          <div className="text-sm font-semibold">Inventory mix</div>
-          <div className="text-xs text-muted-foreground">By CFT</div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+        <Section title="Inventory mix" sub="by CFT, all species">
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
-                <Pie data={speciesData} dataKey="value" nameKey="name" innerRadius={48} outerRadius={80} paddingAngle={2}>
-                  {speciesData.map((_, i) => <Cell key={i} fill={speciesPalette[i % speciesPalette.length]} />)}
+                <Pie data={speciesData} dataKey="value" nameKey="name" innerRadius={42} outerRadius={72} paddingAngle={1} stroke="#fff" strokeWidth={1}>
+                  {speciesData.map((_, i) => (
+                    <Cell key={i} fill={speciesPalette[i % speciesPalette.length]} />
+                  ))}
                 </Pie>
-                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Legend wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-plex-mono)" }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </Section>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="p-0 gap-0">
-          <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-            <div className="text-sm font-semibold">Recent orders</div>
-            <Link href="/app/sales/orders" className="text-xs text-wood-700 font-semibold hover:underline">All orders →</Link>
-          </div>
-          <div className="px-5 pb-4 divide-y divide-border">
-            {db.orders.slice(0, 4).map((o) => {
-              const c = db.customers.find((x) => x.id === o.customerId)!;
-              return (
-                <div key={o.id} className="flex items-center justify-between py-3">
-                  <div>
-                    <div className="font-semibold text-sm">{o.id} · {c.name}</div>
-                    <div className="text-xs text-muted-foreground">{o.species} · {o.cft} CFT</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold text-sm">{fmtMoney(o.cft * o.ratePerCft, ccy)}</div>
-                    <StatusBadge value={o.status} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+      {/* Orders + cash, ledger style */}
+      <div className="grid lg:grid-cols-2 gap-8 mt-8">
+        <Section
+          title="Recent orders"
+          right={<Link href="/app/sales/orders" className="text-xs text-wood-700 font-semibold hover:underline mono">all →</Link>}
+        >
+          <table className="w-full text-sm">
+            <tbody>
+              {db.orders.slice(0, 5).map((o) => {
+                const c = db.customers.find((x) => x.id === o.customerId)!;
+                return (
+                  <tr key={o.id} className="border-t border-border first:border-t-0">
+                    <td className="py-2 pr-2 mono text-[11px] text-muted-foreground w-20">{o.id}</td>
+                    <td className="py-2 pr-2">
+                      <div className="font-medium leading-tight">{c.name}</div>
+                      <div className="text-[11px] text-muted-foreground">{o.species} · {o.cft} CFT</div>
+                    </td>
+                    <td className="py-2 pr-2 text-right mono font-semibold">{fmtMoney(o.cft * o.ratePerCft, ccy)}</td>
+                    <td className="py-2 text-right"><StatusDot value={o.status} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Section>
 
-        <Card className="p-5 gap-3">
-          <div>
-            <div className="text-sm font-semibold">Cash position</div>
-            <div className="text-xs text-muted-foreground">Snapshot</div>
+        <Section title="Cash position" sub="snapshot · in ₹">
+          <table className="w-full text-sm border-t border-border">
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="py-3 pr-2">
+                  <div className="font-medium">Receivable</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {db.invoices.filter((i) => i.status !== "paid").length} open invoices
+                  </div>
+                </td>
+                <td className="py-3 text-right mono text-lg font-semibold text-emerald-700">+ {fmtMoney(recv, ccy)}</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="py-3 pr-2">
+                  <div className="font-medium">Payable</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {db.bills.filter((b) => b.status !== "paid").length} open bills
+                  </div>
+                </td>
+                <td className="py-3 text-right mono text-lg font-semibold text-rose-700">− {fmtMoney(owed, ccy)}</td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-2 font-semibold">Net</td>
+                <td className="py-3 text-right mono text-lg font-bold">{fmtMoney(recv - owed, ccy)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <Link href="/app/accounts/ar" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full rounded-sm")}>View AR</Link>
+            <Link href="/app/accounts/ap" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full rounded-sm")}>View AP</Link>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-4">
-              <div className="text-xs font-semibold text-emerald-700">Receivable</div>
-              <div className="text-2xl font-bold text-emerald-900 mt-1">{fmtMoney(recv, ccy)}</div>
-              <div className="text-[11px] text-emerald-700 mt-1">
-                {db.invoices.filter((i) => i.status !== "paid").length} open invoices
-              </div>
-            </div>
-            <div className="rounded-lg bg-rose-50 border border-rose-100 p-4">
-              <div className="text-xs font-semibold text-rose-700">Payable</div>
-              <div className="text-2xl font-bold text-rose-900 mt-1">{fmtMoney(owed, ccy)}</div>
-              <div className="text-[11px] text-rose-700 mt-1">
-                {db.bills.filter((b) => b.status !== "paid").length} open bills
-              </div>
-            </div>
-          </div>
-          <div className="rounded-lg bg-muted p-3 text-xs">
-            Net position: <span className="font-bold text-foreground">{fmtMoney(recv - owed, ccy)}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Link href="/app/accounts/ar" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full")}>View AR</Link>
-            <Link href="/app/accounts/ap" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full")}>View AP</Link>
-          </div>
-        </Card>
+        </Section>
       </div>
 
-      <Card className="p-0 gap-0">
-        <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-          <div className="text-sm font-semibold">From the floor</div>
-          <Link href="/app/feed" className="text-xs text-wood-700 font-semibold hover:underline">All updates →</Link>
-        </div>
-        <div className="px-5 pb-4 grid sm:grid-cols-3 gap-3">
+      {/* Floor feed */}
+      <Section
+        title="From the floor"
+        right={<Link href="/app/feed" className="text-xs text-wood-700 font-semibold hover:underline mono">all →</Link>}
+        className="mt-8"
+      >
+        <div className="grid sm:grid-cols-3 gap-4 pt-2">
           {db.dailyReports.slice(0, 3).map((r) => (
-            <div key={r.id}>
-              <div
-                className="pic-tile rounded-lg"
-                style={{ backgroundImage: `url(${r.pic})` }}
-              >
+            <div key={r.id} className="border border-border">
+              <div className="pic-tile" style={{ backgroundImage: `url(${r.pic})` }}>
                 <div className="pic-cap">{timeAgo(r.at)}</div>
               </div>
-              <div className="text-xs mt-2 line-clamp-2">{r.text}</div>
+              <div className="p-3">
+                <p className="text-sm leading-snug">{r.text}</p>
+                <p className="text-[11px] text-muted-foreground mt-1 mono">{fmtDate(r.at)}</p>
+              </div>
             </div>
           ))}
         </div>
-      </Card>
+      </Section>
     </div>
   );
 }

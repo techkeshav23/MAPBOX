@@ -7,9 +7,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-heading: var(--font-plex-sans);
+  --font-serif: var(--font-plex-serif);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,14 +41,17 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
 
-  /* Wood palette — sawmill brand */
+  /* Tighter radius — feels less "AI saas" */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --radius-3xl: 10px;
+  --radius-4xl: 12px;
+
+  /* Wood palette */
   --color-wood-50:  #FBF7F1;
   --color-wood-100: #F4EAD8;
   --color-wood-200: #E8D2AE;
@@ -57,100 +62,150 @@
   --color-wood-700: #79482C;
   --color-wood-800: #5A3621;
   --color-wood-900: #3F2616;
+  --color-ink: #1B1410;       /* near-black with warmth */
 }
 
 :root {
-  --background: oklch(0.99 0.005 75);
-  --foreground: oklch(0.18 0.015 60);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.015 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.015 60);
-  --primary: oklch(0.43 0.08 50);                /* wood-700 */
-  --primary-foreground: oklch(0.98 0.01 75);
-  --secondary: oklch(0.96 0.01 75);
-  --secondary-foreground: oklch(0.30 0.05 50);
-  --muted: oklch(0.97 0.005 75);
-  --muted-foreground: oklch(0.50 0.02 60);
-  --accent: oklch(0.96 0.025 75);                /* wood-100 */
-  --accent-foreground: oklch(0.43 0.08 50);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.01 70);
-  --input: oklch(0.92 0.01 70);
-  --ring: oklch(0.55 0.10 60);
-  --chart-1: oklch(0.55 0.10 50);                /* wood */
-  --chart-2: oklch(0.70 0.12 80);                /* amber */
-  --chart-3: oklch(0.65 0.15 145);               /* emerald */
-  --chart-4: oklch(0.65 0.18 25);                /* rose */
-  --chart-5: oklch(0.60 0.15 270);               /* violet */
-  --radius: 0.625rem;
-  --sidebar: oklch(0.99 0.005 75);
-  --sidebar-foreground: oklch(0.30 0.02 60);
-  --sidebar-primary: oklch(0.43 0.08 50);
-  --sidebar-primary-foreground: oklch(0.98 0.01 75);
-  --sidebar-accent: oklch(0.96 0.025 75);
-  --sidebar-accent-foreground: oklch(0.43 0.08 50);
-  --sidebar-border: oklch(0.92 0.01 70);
-  --sidebar-ring: oklch(0.55 0.10 60);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.55 0.10 60);
-  --primary-foreground: oklch(0.18 0.015 60);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #FBFAF7;
+  --foreground: #1B1410;
+  --card: #FFFFFF;
+  --card-foreground: #1B1410;
+  --popover: #FFFFFF;
+  --popover-foreground: #1B1410;
+  --primary: #79482C;
+  --primary-foreground: #FBF7F1;
+  --secondary: #F2EEE7;
+  --secondary-foreground: #1B1410;
+  --muted: #F4F1EB;
+  --muted-foreground: #6B5E51;
+  --accent: #F4EAD8;
+  --accent-foreground: #5A3621;
+  --destructive: #B91C1C;
+  --border: #E5E0D6;
+  --input: #E5E0D6;
+  --ring: #79482C;
+  --chart-1: #79482C;
+  --chart-2: #C8945A;
+  --chart-3: #5A3621;
+  --chart-4: #B27843;
+  --chart-5: #D9B57F;
+  --radius: 0.25rem;
+  --sidebar: #FBFAF7;
+  --sidebar-foreground: #4A3F35;
+  --sidebar-primary: #79482C;
+  --sidebar-primary-foreground: #FBF7F1;
+  --sidebar-accent: #F4EAD8;
+  --sidebar-accent-foreground: #5A3621;
+  --sidebar-border: #E5E0D6;
+  --sidebar-ring: #79482C;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  /* Density: ~13px base, tighter line-height. Tabular numerals everywhere. */
+  html {
+    font-size: 14px;
+    font-feature-settings: "ss01", "cv11", "tnum";
+  }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
   }
-  html {
-    @apply font-sans;
+
+  /* Numbers: always tabular */
+  .nums, td, th, .stat, code, kbd, samp {
+    font-variant-numeric: tabular-nums;
   }
 }
+
+/* === Components === */
+
+/* Section: flat, hairline-divided block (replacement for boxed Cards on dashboards) */
+.section {
+  background: var(--card);
+  border-top: 1px solid var(--color-border);
+}
+.section-pad { padding: 1rem 1.25rem; }
+
+/* DataStrip: newspaper-style horizontal facts row (replaces 4-up KPI cards) */
+.datastrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  background: var(--card);
+}
+.datastrip > div {
+  padding: 0.6rem 0.9rem;
+  border-right: 1px solid var(--color-border);
+}
+.datastrip > div:last-child { border-right: 0; }
+.datastrip-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+.datastrip-value {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 0.1rem;
+  color: var(--foreground);
+}
+.datastrip-sub {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 0.05rem;
+}
+.datastrip-sub.up    { color: #047857; }
+.datastrip-sub.down  { color: #B91C1C; }
+
+/* Inline status: tiny dot + label */
+.dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 99px;
+  margin-right: 0.4rem;
+  vertical-align: 1px;
+}
+.dot-emerald { background: #047857; }
+.dot-amber   { background: #B45309; }
+.dot-rose    { background: #B91C1C; }
+.dot-slate   { background: #6B5E51; }
+.dot-wood    { background: var(--color-wood-700); }
+
+.status-text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--foreground);
+}
+
+/* Block divider: 1px ink line for major content separators */
+.rule { border-top: 1px solid var(--color-ink); }
+.rule-thin { border-top: 1px solid var(--color-border); }
 
 /* Editable cell for sheet editor */
 .cell {
   border: 1px solid var(--color-border);
-  padding: 0.4rem 0.55rem;
+  padding: 0.35rem 0.55rem;
   font-size: 0.85rem;
   outline: none;
   min-width: 110px;
   background: white;
+  font-variant-numeric: tabular-nums;
 }
-.cell:focus { border-color: var(--color-wood-400); box-shadow: inset 0 0 0 1px var(--color-wood-400); position: relative; z-index: 1; }
-.cell-head { background: var(--color-muted); font-weight: 600; color: var(--color-muted-foreground); text-align: center; min-width: 70px; }
+.cell:focus { border-color: var(--color-wood-700); box-shadow: inset 0 0 0 1px var(--color-wood-700); position: relative; z-index: 1; }
+.cell-head { background: var(--muted); font-weight: 600; color: var(--muted-foreground); text-align: center; min-width: 70px; }
 
 /* Picture tile (for daily feed) */
 .pic-tile {
@@ -167,6 +222,38 @@
 }
 
 /* Chat bubbles */
-.bubble { max-width: 75%; padding: 0.55rem 0.85rem; border-radius: 0.85rem; font-size: 0.875rem; line-height: 1.4; }
-.bubble-them { background: var(--color-muted); color: var(--color-foreground); border-bottom-left-radius: 0.25rem; }
-.bubble-me   { background: var(--color-wood-700); color: white; border-bottom-right-radius: 0.25rem; }
+.bubble { max-width: 75%; padding: 0.5rem 0.8rem; border-radius: 0.45rem; font-size: 0.875rem; line-height: 1.4; }
+.bubble-them { background: var(--muted); color: var(--foreground); border-bottom-left-radius: 2px; }
+.bubble-me   { background: var(--color-wood-700); color: white; border-bottom-right-radius: 2px; }
+
+/* Print-style ruled invoice */
+.invoice {
+  font-family: var(--font-plex-serif), Georgia, serif;
+  color: #111;
+  background: #fff;
+  padding: 1.5rem;
+}
+.invoice h1, .invoice h2, .invoice h3 {
+  font-family: var(--font-plex-serif), Georgia, serif;
+  font-weight: 700;
+}
+.invoice .ruled { border-top: 2px solid #111; }
+.invoice .ruled-thin { border-top: 1px solid #111; }
+.invoice table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.invoice table th { text-align: left; font-weight: 600; padding: 0.4rem 0.5rem; border-bottom: 1px solid #111; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.invoice table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid #ddd; font-size: 13px; }
+
+/* Subtle wood-grain texture (4% opacity) for hero sections — lift without shadows */
+.wood-grain {
+  background-color: var(--color-wood-50);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(121,72,44,0.05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(121,72,44,0.025) 0 1px, transparent 1px 7px);
+}
+
+/* Mono inline */
+.mono { font-family: var(--font-plex-mono), ui-monospace, monospace; }
+
+/* Compact hover for table rows */
+.tbl-tight tr { height: 36px; }
+.tbl-tight th, .tbl-tight td { padding-top: 0.35rem !important; padding-bottom: 0.35rem !important; }

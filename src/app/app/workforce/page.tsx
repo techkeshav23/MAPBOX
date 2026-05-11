@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { fmtMoney } from "@/lib/format";
-import { StatCard } from "@/components/shared/stat-card";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Card } from "@/components/ui/card";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { PageHeader } from "@/components/shared/page-header";
+import { DataStrip } from "@/components/shared/data-strip";
+import { Section } from "@/components/shared/section";
+import { StatusDot } from "@/components/shared/status-dot";
 import { ClipboardCheck, Users } from "lucide-react";
 
 export default function HrDashboard() {
@@ -25,82 +23,76 @@ export default function HrDashboard() {
     const base = lab?.dailyWage ?? 0;
     return s + (a.status === "present" ? base : a.status === "half" ? base / 2 : 0);
   }, 0);
+  const todayLabel = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Workforce today</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {present} present · {half} half-day · {absent} absent. Today&apos;s wage liability: {fmtMoney(wages, ccy)}
-        </p>
-      </div>
+    <div>
+      <PageHeader
+        meta={`workforce · ${todayLabel}`}
+        title="Workforce today"
+        sub={`${present} present · ${half} half-day · ${absent} absent. Wage liability for today: ${fmtMoney(wages, ccy)}.`}
+      />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total workers" value={db.labour.length} delta="on roll" />
-        <StatCard label="Present today" value={present} delta={`${db.labour.length - absent}/${db.labour.length}`} trend={absent === 0 ? "up" : "flat"} />
-        <StatCard label="OT hours" value={ot} delta="today" />
-        <StatCard label="Today wages" value={fmtMoney(wages, ccy)} delta="estimate" />
-      </div>
+      <DataStrip
+        facts={[
+          { label: "On roll", value: db.labour.length },
+          { label: "Present", value: `${present}/${db.labour.length}`, sub: absent === 0 ? "full strength" : `${absent} absent`, trend: absent === 0 ? "up" : "down" },
+          { label: "OT hours", value: ot, sub: "today" },
+          { label: "Today wages", value: fmtMoney(wages, ccy), sub: "estimate" },
+        ]}
+      />
 
-      <div className="grid sm:grid-cols-2 gap-3">
-        <Link
-          href="/app/workforce/attendance"
-          className="rounded-lg border border-border hover:border-wood-400 transition p-5 flex items-center gap-3 bg-card"
-        >
-          <div className="w-10 h-10 rounded-lg bg-wood-100 text-wood-700 grid place-items-center">
-            <ClipboardCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="font-semibold text-sm">Mark attendance</div>
-            <div className="text-xs text-muted-foreground">Today&apos;s marking sheet</div>
-          </div>
-        </Link>
-        <Link
-          href="/app/workforce/labour"
-          className="rounded-lg border border-border hover:border-wood-400 transition p-5 flex items-center gap-3 bg-card"
-        >
-          <div className="w-10 h-10 rounded-lg bg-wood-100 text-wood-700 grid place-items-center">
-            <Users className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="font-semibold text-sm">Worker directory</div>
-            <div className="text-xs text-muted-foreground">{db.labour.length} entries</div>
-          </div>
-        </Link>
-      </div>
-
-      <Card className="p-0 gap-0 overflow-hidden">
-        <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-          <div className="text-sm font-semibold">Today&apos;s roster</div>
-          <Link href="/app/workforce/attendance" className="text-xs text-wood-700 font-semibold hover:underline">
-            Mark attendance →
+      <Section title="Quick actions" className="mt-8">
+        <div className="grid sm:grid-cols-2 gap-px bg-border">
+          <Link href="/app/workforce/attendance" className="bg-background hover:bg-muted/50 p-4 flex items-center gap-3">
+            <ClipboardCheck className="w-4 h-4 text-wood-700" />
+            <div>
+              <div className="font-medium text-sm">Mark attendance</div>
+              <div className="text-[11px] mono text-muted-foreground">→ /workforce/attendance</div>
+            </div>
+          </Link>
+          <Link href="/app/workforce/labour" className="bg-background hover:bg-muted/50 p-4 flex items-center gap-3">
+            <Users className="w-4 h-4 text-wood-700" />
+            <div>
+              <div className="font-medium text-sm">Worker directory</div>
+              <div className="text-[11px] mono text-muted-foreground">{db.labour.length} entries</div>
+            </div>
           </Link>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Worker</TableHead><TableHead>Role</TableHead>
-              <TableHead>Status</TableHead><TableHead>OT</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      </Section>
+
+      <Section
+        title={`Today's roster · ${todayLabel}`}
+        right={<Link href="/app/workforce/attendance" className="text-xs text-wood-700 font-semibold hover:underline mono">mark →</Link>}
+        className="mt-8"
+      >
+        <table className="w-full text-sm border-t border-border">
+          <thead>
+            <tr className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+              <th className="text-left py-2 pr-3 font-semibold">Worker</th>
+              <th className="text-left py-2 pr-3 font-semibold">Role</th>
+              <th className="text-left py-2 pr-3 font-semibold">Status</th>
+              <th className="text-right py-2 font-semibold">OT</th>
+            </tr>
+          </thead>
+          <tbody>
             {db.labour.map((l) => {
               const a = todayMarks.find((x) => x.laborId === l.id);
               return (
-                <TableRow key={l.id}>
-                  <TableCell>
-                    <div className="font-semibold">{l.name}</div>
-                    <div className="text-xs text-muted-foreground">{l.phone}</div>
-                  </TableCell>
-                  <TableCell>{l.role}</TableCell>
-                  <TableCell><StatusBadge value={a?.status ?? "absent"} /></TableCell>
-                  <TableCell>{a?.hoursOt ? `${a.hoursOt} hr` : "—"}</TableCell>
-                </TableRow>
+                <tr key={l.id} className="border-t border-border">
+                  <td className="py-2 pr-3">
+                    <div className="font-medium leading-tight">{l.name}</div>
+                    <div className="text-[11px] mono text-muted-foreground">{l.phone}</div>
+                  </td>
+                  <td className="py-2 pr-3">{l.role}</td>
+                  <td className="py-2 pr-3"><StatusDot value={a?.status ?? "absent"} /></td>
+                  <td className="py-2 text-right mono">{a?.hoursOt ? `${a.hoursOt} hr` : "—"}</td>
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
-      </Card>
+          </tbody>
+        </table>
+      </Section>
     </div>
   );
 }

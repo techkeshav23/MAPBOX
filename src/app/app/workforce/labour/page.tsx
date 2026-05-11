@@ -146,7 +146,7 @@ function WorkerDialog({
           <div className="grid grid-cols-2 gap-3">
             <Field label="Full name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
             <Field label="Role">
-              <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
+              <Select value={form.role} onValueChange={(v) => v && setForm({ ...form, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {["Mistri", "Helper", "Loader", "Driver", "Munshi"].map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
@@ -156,7 +156,7 @@ function WorkerDialog({
             <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
             <Field label="Joined on"><Input type="date" value={form.joined} onChange={(e) => setForm({ ...form, joined: e.target.value })} /></Field>
             <Field label="Wage type">
-              <Select value={form.wageType} onValueChange={(v) => setForm({ ...form, wageType: v as Worker["wageType"] })}>
+              <Select value={form.wageType} onValueChange={(v) => v && setForm({ ...form, wageType: v as Worker["wageType"] })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="daily">Daily</SelectItem>

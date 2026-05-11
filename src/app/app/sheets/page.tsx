@@ -290,22 +290,28 @@ function SheetEditor({
   const sheet = useStore((s) => s.db.sheets.find((x) => x.id === sheetId));
   const setDb = useStore((s) => s.setDb);
 
-  const initial: SheetData = (sheet?.data ?? []).map((r) => [...r]);
-  while (initial.length < 8) initial.push(Array(6).fill(""));
-  const cols = Math.max(6, ...initial.map((r) => r.length));
-  initial.forEach((r) => { while (r.length < cols) r.push(""); });
-  const [data, setData] = useState<SheetData>(initial);
-  const [, force] = useState({});
+  const [data, setData] = useState<SheetData>(() => {
+    const init: SheetData = (sheet?.data ?? []).map((r) => [...r]);
+    while (init.length < 8) init.push(Array(6).fill(""));
+    const c = Math.max(6, ...init.map((r) => r.length));
+    init.forEach((r) => { while (r.length < c) r.push(""); });
+    return init;
+  });
 
   if (!sheet) return null;
 
   function addRow() {
-    data.push(Array(data[0].length).fill(""));
-    force({});
+    setData((d) => [...d, Array(d[0].length).fill("")]);
   }
   function addCol() {
-    data.forEach((r) => r.push(""));
-    force({});
+    setData((d) => d.map((r) => [...r, ""]));
+  }
+  function setCell(r: number, c: number, value: string) {
+    setData((prev) => {
+      const next = prev.map((row) => [...row]);
+      next[r][c] = value;
+      return next;
+    });
   }
   function save() {
     setDb((db) => {
@@ -318,68 +324,84 @@ function SheetEditor({
     onClose();
   }
 
+  const cols = data[0]?.length ?? 0;
+
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl">
-        <DialogHeader>
-          <DialogTitle>{sheet.name}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="text-sm text-muted-foreground">
-              {sheet.name} · last saved {fmtDateTime(sheet.updatedAt)}
-            </div>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="sm" onClick={addRow}>+ Row</Button>
-              <Button variant="ghost" size="sm" onClick={addCol}>+ Column</Button>
-            </div>
+      <DialogContent className="!max-w-[96vw] w-[96vw] !h-[92vh] !max-h-[92vh] p-0 gap-0">
+        <DialogHeader className="px-4 py-3 border-b border-border flex flex-row items-center justify-between gap-3">
+          <div className="flex items-baseline gap-2 min-w-0">
+            <DialogTitle className="font-mono text-sm truncate">{sheet.name}</DialogTitle>
+            <span className="text-[10px] mono text-muted-foreground whitespace-nowrap">
+              · {data.length}r × {cols}c · saved {fmtDateTime(sheet.updatedAt)}
+            </span>
           </div>
-          <div className="overflow-auto border border-border rounded-lg" style={{ maxHeight: "60vh" }}>
-            <table className="border-collapse">
-              <thead>
-                <tr>
-                  <th className="cell cell-head w-10">#</th>
-                  {Array.from({ length: data[0]?.length ?? 0 }, (_, i) => (
-                    <th key={i} className="cell cell-head">{String.fromCharCode(65 + i)}</th>
+          <div className="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="sm" onClick={addRow} className="rounded-sm h-7 px-2">+ row</Button>
+            <Button variant="ghost" size="sm" onClick={addCol} className="rounded-sm h-7 px-2">+ column</Button>
+          </div>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-auto bg-muted/30 min-w-0 min-h-0">
+          <table className="border-collapse min-w-full">
+            <thead className="sticky top-0 z-10">
+              <tr>
+                <th className="cell cell-head w-12">#</th>
+                {Array.from({ length: cols }, (_, i) => (
+                  <th key={i} className="cell cell-head">{colLetter(i)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, r) => (
+                <tr key={r}>
+                  <td className="cell cell-head w-12 sticky left-0 z-[5]">{r + 1}</td>
+                  {row.map((c, ci) => (
+                    <td key={ci}>
+                      <div
+                        className="cell"
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => setCell(r, ci, e.currentTarget.textContent ?? "")}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            (e.currentTarget as HTMLDivElement).blur();
+                          }
+                        }}
+                      >
+                        {String(c ?? "")}
+                      </div>
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {data.map((row, r) => (
-                  <tr key={r}>
-                    <td className="cell cell-head">{r + 1}</td>
-                    {row.map((c, ci) => (
-                      <td key={ci}>
-                        <div
-                          className="cell"
-                          contentEditable
-                          suppressContentEditableWarning
-                          onBlur={(e) => {
-                            data[r][ci] = e.currentTarget.textContent ?? "";
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              (e.currentTarget as HTMLDivElement).blur();
-                            }
-                          }}
-                        >
-                          {String(c ?? "")}
-                        </div>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onDownload({ ...sheet, data })}>Download .xlsx</Button>
-          <Button variant="outline" onClick={onClose}>Close</Button>
-          <Button onClick={save}>Save</Button>
+
+        <DialogFooter className="px-4 py-3 border-t border-border bg-background flex-row sm:justify-between !gap-2">
+          <div className="text-[11px] mono text-muted-foreground self-center">
+            tab / arrows to navigate · enter to commit · scroll for more
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => onDownload({ ...sheet, data })} className="rounded-sm">Download .xlsx</Button>
+            <Button variant="outline" onClick={onClose} className="rounded-sm">Close</Button>
+            <Button onClick={save} className="rounded-sm">Save</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+}
+
+function colLetter(n: number): string {
+  let s = "";
+  let x = n;
+  while (true) {
+    s = String.fromCharCode(65 + (x % 26)) + s;
+    x = Math.floor(x / 26) - 1;
+    if (x < 0) break;
+  }
+  return s;
 }

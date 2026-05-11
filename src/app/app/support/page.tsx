@@ -154,7 +154,7 @@ function NewTicketDialog({
           <div><Label>Message</Label><Textarea rows={4} value={msg} onChange={(e) => setMsg(e.target.value)} /></div>
           <div>
             <Label>Need a callback?</Label>
-            <Select value={cb} onValueChange={setCb}>
+            <Select value={cb} onValueChange={(v) => setCb(v ?? "no")}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="no">No, just chat</SelectItem>

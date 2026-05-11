@@ -67,13 +67,13 @@ export default function LogsPage() {
 
       <Card className="p-3 flex flex-row items-center gap-2 flex-wrap">
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search ID, supplier, truck…" className="max-w-xs" />
-        <Select value={species} onValueChange={setSpecies}>
+        <Select value={species} onValueChange={(v) => setSpecies(v ?? "all")}>
           <SelectTrigger className="max-w-[10rem]"><SelectValue /></SelectTrigger>
           <SelectContent>
             {speciesOpts.map((s) => <SelectItem key={s} value={s}>{s === "all" ? "All species" : s}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={status} onValueChange={setStatus}>
+        <Select value={status} onValueChange={(v) => setStatus(v ?? "all")}>
           <SelectTrigger className="max-w-[10rem]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All status</SelectItem>
@@ -176,7 +176,7 @@ function LogFormDialog({
             <Field label="Graded CFT"><Input type="number" step={0.1} value={form.gradedCft} onChange={(e) => setForm({ ...form, gradedCft: +e.target.value || 0 })} /></Field>
             <Field label={`Rate / CFT (${ccy})`}><Input type="number" value={form.ratePerCft} onChange={(e) => setForm({ ...form, ratePerCft: +e.target.value || 0 })} /></Field>
             <Field label="Status">
-              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as LogLot["status"] })}>
+              <Select value={form.status} onValueChange={(v) => v && setForm({ ...form, status: v as LogLot["status"] })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">pending</SelectItem>

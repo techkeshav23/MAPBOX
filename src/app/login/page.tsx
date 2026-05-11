@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { PERSONAS } from "@/lib/seed";
 import { signIn, useStore } from "@/lib/store";
 import { defaultRouteFor } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { Building2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,102 +21,81 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-wood-50">
-      {/* Brand pane */}
-      <section className="relative hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-wood-800 via-wood-700 to-wood-900 text-wood-50 overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.06] pointer-events-none"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 24px), repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 24px)",
-          }}
-        />
-
-        <div className="relative">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-wood-50 text-wood-800 grid place-items-center font-extrabold text-xl shadow-lg">
-              S
-            </div>
-            <div>
-              <div className="text-xl font-bold tracking-tight">SawmillOS</div>
-              <div className="text-xs text-wood-200/80 uppercase tracking-widest">
-                Mill management, end to end
-              </div>
-            </div>
+    <div className="min-h-screen grid lg:grid-cols-[1.05fr_1fr] bg-background">
+      {/* Brand pane — flat, ledger-feel, no gradients */}
+      <section className="relative hidden lg:flex flex-col justify-between p-12 bg-wood-50 wood-grain border-r border-ink/10">
+        <div className="relative z-10">
+          <div className="flex items-baseline gap-3">
+            <div className="font-serif text-3xl font-bold text-wood-900 tracking-tight">SawmillOS</div>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-wood-700/70 font-semibold">
+              v0.1 · single-tenant
+            </span>
           </div>
 
-          <div className="mt-16 max-w-md">
-            <h1 className="text-4xl font-extrabold leading-tight">
-              From log to ledger — one platform.
+          <div className="mt-12 max-w-md">
+            <h1 className="font-serif text-[42px] leading-[1.05] tracking-tight text-wood-900">
+              Procurement.<br />Sawing.<br />Sales. <span className="text-wood-500">Books.</span>
             </h1>
-            <p className="mt-4 text-wood-100/90 leading-relaxed">
-              Manage procurement, sawing, yield, labour, sales and accounts across your
-              entire mill. Built for shared computers, weak Wi-Fi, and trust by design.
+            <p className="mt-5 text-[15px] text-wood-800/85 leading-relaxed max-w-sm">
+              One workspace for the mill — built for shared computers,
+              weak Wi-Fi, and the way you actually run the day.
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-3 max-w-md">
-            {[
-              ["5+", "Role-based access"],
-              ["Offline", "First sync"],
-              ["Vault", "Admin-only data"],
-              ["Sheets", "Live, foldered"],
-            ].map(([big, small]) => (
-              <div
-                key={big}
-                className="rounded-lg bg-white/5 ring-1 ring-white/10 p-3 backdrop-blur-sm"
-              >
-                <div className="text-2xl font-bold">{big}</div>
-                <div className="text-xs text-wood-200/80">{small}</div>
-              </div>
-            ))}
+          {/* Newspaper info-strip on the brand pane */}
+          <div className="mt-12 max-w-md">
+            <div className="border-t border-b border-wood-900/30">
+              <dl className="grid grid-cols-2 divide-x divide-wood-900/10">
+                {[
+                  ["TENANT", "Sharma Sawmill"],
+                  ["LOCATION", "Yamunanagar, HR"],
+                  ["WORKERS", "6 on roll"],
+                  ["LOTS THIS MO.", "1,240"],
+                ].map(([k, v]) => (
+                  <div key={k} className="py-3 px-4">
+                    <dt className="text-[10px] uppercase tracking-[0.12em] text-wood-700/70 font-semibold">{k}</dt>
+                    <dd className="mono text-[15px] font-semibold text-wood-900 mt-0.5">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </div>
         </div>
 
-        <div className="relative text-xs text-wood-200/70">
-          Demo build · v0.1 · Single tenant active (Sharma Sawmill)
+        <div className="relative z-10 text-[11px] text-wood-700/60 mono">
+          BUILD 0.1.0 · {new Date().toISOString().slice(0, 10)} · SHARMA SAWMILL ACTIVE
         </div>
       </section>
 
       {/* Login pane */}
-      <section className="flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 rounded-lg bg-wood-700 text-wood-50 grid place-items-center font-extrabold">
-              S
-            </div>
-            <span className="font-bold text-lg">SawmillOS</span>
+      <section className="flex items-center justify-center p-8 sm:p-12">
+        <div className="w-full max-w-[380px]">
+          <div className="lg:hidden mb-10">
+            <div className="font-serif text-2xl font-bold text-wood-900">SawmillOS</div>
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Choose a persona to enter the demo. No password needed.
+          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">
+            sign in
+          </div>
+          <h2 className="text-[24px] font-semibold tracking-tight mt-1">Pick a workstation user</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            No password — this is the demo. Each user sees the screens for their role.
           </p>
 
-          <div className="mt-8 space-y-5">
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Workspace
-              </label>
-              <Card className="mt-1 flex-row items-center gap-2 px-3 py-2.5 flex">
-                <Building2 className="w-4 h-4 text-muted-foreground" />
-                <input
-                  value="sharma-sawmill"
-                  disabled
-                  className="flex-1 bg-transparent text-sm outline-none"
-                />
-                <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                  ACTIVE
-                </Badge>
-              </Card>
+          <div className="mt-8 space-y-3">
+            <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.12em] text-muted-foreground font-semibold">
+              <span>Workspace</span>
+              <span><span className="dot dot-emerald" />active</span>
+            </div>
+            <div className="rule-thin pt-3 mono text-[13px]">
+              sharma-sawmill · Yamunanagar
             </div>
 
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="rule pt-3 mt-6">
+              <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground font-semibold mb-2">
                 Sign in as
-              </label>
-              <div className="mt-2 space-y-2">
+              </div>
+              <div className="divide-y divide-border border-t border-border">
                 {PERSONAS.map((p) => {
                   const active = picked === p.id;
                   return (
@@ -129,28 +104,24 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => setPicked(p.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 rounded-lg border px-3 py-2.5 transition text-left",
-                        active
-                          ? "border-wood-500 bg-wood-50 ring-2 ring-wood-200"
-                          : "border-border hover:border-wood-300 hover:bg-wood-50/40",
+                        "w-full flex items-center gap-3 px-2 py-2.5 text-left transition-colors",
+                        active ? "bg-wood-50" : "hover:bg-muted/50",
                       )}
                     >
-                      <Avatar className={cn("w-9 h-9", p.color)}>
-                        <AvatarFallback className="bg-transparent text-current font-bold text-sm">
-                          {p.initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-foreground truncate">
-                          {p.name}
-                        </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {p.roleLabel}
-                          {p.scope ? ` · ${p.scope}` : ""}
-                        </div>
+                      <div
+                        className={cn(
+                          "w-8 h-8 grid place-items-center text-[11px] font-semibold mono",
+                          active ? "bg-wood-700 text-wood-50" : "bg-muted text-foreground",
+                        )}
+                      >
+                        {p.initials}
                       </div>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        {p.tier}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{p.name}</div>
+                        <div className="text-xs text-muted-foreground truncate">{p.roleLabel}</div>
+                      </div>
+                      <span className="text-[10px] uppercase tracking-[0.1em] font-semibold text-muted-foreground">
+                        {p.tier === "Platform" ? "platform" : "tenant"}
                       </span>
                     </button>
                   );
@@ -158,17 +129,14 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button
-              className="w-full bg-wood-700 hover:bg-wood-800 text-white"
-              size="lg"
-              onClick={continueIn}
-              disabled={!picked}
-            >
-              Continue
-            </Button>
-
-            <p className="text-[11px] text-muted-foreground text-center">
-              Demo data persists locally in your browser.{" "}
+            <div className="pt-2 flex items-center gap-2">
+              <Button
+                className="flex-1 bg-wood-800 hover:bg-wood-900 text-wood-50 rounded-sm h-10 font-semibold tracking-wide"
+                onClick={continueIn}
+                disabled={!picked}
+              >
+                Continue →
+              </Button>
               <button
                 onClick={() => {
                   if (confirm("Reset all demo data to factory defaults?")) {
@@ -176,11 +144,11 @@ export default function LoginPage() {
                     alert("Demo data reset. Sign in again.");
                   }
                 }}
-                className="underline hover:text-foreground"
+                className="text-[11px] text-muted-foreground hover:text-foreground underline underline-offset-4 px-2 mono"
               >
-                Reset demo
+                reset
               </button>
-            </p>
+            </div>
           </div>
         </div>
       </section>
